@@ -47,3 +47,5 @@ def classify_news(input_text):
 user_input = input("Enter the news text: ")
 result = classify_news(user_input)
 print("The news is classified as:", result)
+
+// you can download and change csv name for true.csv and fake.csv as the data set i use is from kaggle its too large and cannot be uoloaded here
