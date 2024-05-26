@@ -1,0 +1,49 @@
+//imports
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.pipeline import Pipeline
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report
+import re
+
+//reading Csv file
+true_data = pd.read_csv("true.csv")
+fake_data = pd.read_csv("fake.csv")
+
+//labelling data
+true_data['label'] = 1
+fake_data['label'] = 0
+
+//concating both dataset
+data = pd.concat([true_data, fake_data])
+
+//training dataset
+X_train, X_test, y_train, y_test = train_test_split(data['text'], data['label'], test_size=0.2, random_state=42)
+
+//classifying proprecess text
+def preprocess_text(text):
+    text = text.lower()
+    text = re.sub(r'[^\w\s]', '', text)
+    return text
+
+//creating pipeline and vectorization
+pipeline = Pipeline([
+    ('tfidf', TfidfVectorizer()),
+    ('svm', SVC())
+])
+pipeline.fit(X_train, y_train)
+
+//defining news and predecting news
+predictions = pipeline.predict(X_test)
+print(classification_report(y_test, predictions))
+
+def classify_news(input_text):
+    preprocessed_text = preprocess_text(input_text)
+    prediction = pipeline.predict([preprocessed_text])
+    return "Fake" if prediction[0] == 0 else "True"
+
+//User input
+user_input = input("Enter the news text: ")
+result = classify_news(user_input)
+print("The news is classified as:", result)
